@@ -30,6 +30,31 @@ def draw_snake(screen, snake_segments):
     for segment in snake_segments:
         pygame.draw.rect(screen, WHITE, segment)
 
+# Función para manejar los eventos del teclado
+
+
+def handle_keyboard_events(event, direction):
+    if event.key == pygame.K_UP and direction != DOWN:
+        return UP
+    elif event.key == pygame.K_DOWN and direction != UP:
+        return DOWN
+    elif event.key == pygame.K_LEFT and direction != RIGHT:
+        return LEFT
+    elif event.key == pygame.K_RIGHT and direction != LEFT:
+        return RIGHT
+    return direction
+
+# Función para actualizar la posición de la serpiente
+
+
+def update_snake_position(snake_segments, direction):
+    head_x, head_y = snake_segments[0].topleft
+    new_head = pygame.Rect(
+        head_x + direction[0], head_y + direction[1], SEGMENT_SIZE, SEGMENT_SIZE)
+    snake_segments.insert(0, new_head)
+    if len(snake_segments) > 1:  # Evita eliminar el segmento si solo hay uno
+        snake_segments.pop()
+
 # Bucle principal del juego
 
 
@@ -46,22 +71,9 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP and direction != DOWN:
-                    direction = UP
-                elif event.key == pygame.K_DOWN and direction != UP:
-                    direction = DOWN
-                elif event.key == pygame.K_LEFT and direction != RIGHT:
-                    direction = LEFT
-                elif event.key == pygame.K_RIGHT and direction != LEFT:
-                    direction = RIGHT
+                direction = handle_keyboard_events(event, direction)
 
-        # Mover la serpiente
-        head_x, head_y = snake_segments[0].topleft
-        new_head = pygame.Rect(
-            head_x + direction[0], head_y + direction[1], SEGMENT_SIZE, SEGMENT_SIZE)
-        snake_segments.insert(0, new_head)
-        if len(snake_segments) > 1:  # Evita eliminar el segmento si solo hay uno
-            snake_segments.pop()
+        update_snake_position(snake_segments, direction)
 
         screen.fill(BLACK)  # Fondo de la ventana
         draw_snake(screen, snake_segments)
