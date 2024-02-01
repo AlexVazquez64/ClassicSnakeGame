@@ -1,3 +1,6 @@
+# Al principio de game.py, agrega la importación del nuevo módulo
+from food import Food
+
 import pygame
 import sys
 
@@ -66,6 +69,9 @@ def main():
     # Inicializar la serpiente
     snake_segments = [pygame.Rect(100, 100, SEGMENT_SIZE, SEGMENT_SIZE)]
 
+    # Dentro de la función main(), después de inicializar la serpiente
+    food = Food(screen, width, height, SEGMENT_SIZE)
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -76,6 +82,8 @@ def main():
         update_snake_position(snake_segments, direction)
 
         screen.fill(BLACK)  # Fondo de la ventana
+        # En el bucle principal, dibuja la comida llamando a food.draw()
+        food.draw()
         draw_snake(screen, snake_segments)
 
         pygame.display.flip()  # Actualizar la pantalla
