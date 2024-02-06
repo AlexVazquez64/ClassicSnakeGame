@@ -18,9 +18,10 @@ score = 0
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-# Tamaño del segmento de la serpiente y velocidad
+# Tamaño del segmento de la serpiente, nivel inicial y velocidad de la serpiente
 SEGMENT_SIZE = 20
-SNAKE_SPEED = 5
+level = 1
+SNAKE_SPEED = 5 + (level - 1) * 2  # Aumenta la velocidad basada en el nivel
 
 # Direcciones como vectores
 UP = pygame.Vector2(0, -SEGMENT_SIZE)
@@ -38,15 +39,16 @@ def handle_keyboard_events(event, snake):
         snake.change_direction(LEFT)
     elif event.key == pygame.K_RIGHT:
         snake.change_direction(RIGHT)
-        
+
 # Bucle principal del juego
 
 
 def main():
-    global score  # Añade esta línea
+    global score, level, SNAKE_SPEED
     running = True
     clock = pygame.time.Clock()  # Reloj para controlar la velocidad del juego
     font = pygame.font.SysFont(None, 55)  # Fuente para el puntaje
+    last_score_increase = 0  # Añade esta línea
 
     snake = Snake(screen, SEGMENT_SIZE)  # Inicializar la serpiente
     food = Food(screen, width, height, SEGMENT_SIZE)  # Inicializar la comida
@@ -56,13 +58,18 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                direction = handle_keyboard_events(event, snake)
+                handle_keyboard_events(event, snake)
 
         snake.move()
         if snake.segments[0].topleft == food.position:
             score += 1
             food.respawn()
             snake.grow()
+
+        if score % 5 == 0 and score != 0 and score != last_score_increase:
+            level += 1
+            SNAKE_SPEED += 2
+            last_score_increase = score
 
         if snake.check_collision_with_self() or not 0 <= snake.segments[0].x < width or not 0 <= snake.segments[0].y < height:
             running = False  # Terminar el juego si hay colisión
@@ -71,7 +78,9 @@ def main():
         food.draw()
         snake.draw()
 
-        score_text = font.render(f'Score: {score}', True, WHITE)
+        # score_text = font.render(f'Score: {score}', True, WHITE)
+        score_text = font.render(
+            f'Score: {score} - Level: {level}', True, WHITE)
         screen.blit(score_text, (10, 10))
 
         pygame.display.flip()
