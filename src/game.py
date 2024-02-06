@@ -1,5 +1,7 @@
 from food import Food
 from snake import Snake
+# Asegúrate de tener este archivo y función
+from menu import show_start_screen, show_game_over_screen
 import pygame
 import sys
 
@@ -11,23 +13,15 @@ width, height = 640, 480
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Classic Snake Game')
 
-# En la parte superior del archivo, define la puntuación inicial
-score = 0
-
 # Colores
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-# Tamaño del segmento de la serpiente, nivel inicial y velocidad de la serpiente
-SEGMENT_SIZE = 20
-level = 1
-SNAKE_SPEED = 5 + (level - 1) * 2  # Aumenta la velocidad basada en el nivel
-
 # Direcciones como vectores
-UP = pygame.Vector2(0, -SEGMENT_SIZE)
-DOWN = pygame.Vector2(0, SEGMENT_SIZE)
-LEFT = pygame.Vector2(-SEGMENT_SIZE, 0)
-RIGHT = pygame.Vector2(SEGMENT_SIZE, 0)
+UP = pygame.Vector2(0, -20)
+DOWN = pygame.Vector2(0, 20)
+LEFT = pygame.Vector2(-20, 0)
+RIGHT = pygame.Vector2(20, 0)
 
 
 def handle_keyboard_events(event, snake):
@@ -40,23 +34,24 @@ def handle_keyboard_events(event, snake):
     elif event.key == pygame.K_RIGHT:
         snake.change_direction(RIGHT)
 
-# Bucle principal del juego
 
-
-def main():
-    global score, level, SNAKE_SPEED
+def game_loop(screen):
+    global width, height
+    score = 0
+    level = 1
+    SNAKE_SPEED = 5 + (level - 1) * 2
+    font = pygame.font.SysFont(None, 55)
+    last_score_increase = 0
+    snake = Snake(screen, 20)
+    food = Food(screen, width, height, 20)
     running = True
-    clock = pygame.time.Clock()  # Reloj para controlar la velocidad del juego
-    font = pygame.font.SysFont(None, 55)  # Fuente para el puntaje
-    last_score_increase = 0  # Añade esta línea
-
-    snake = Snake(screen, SEGMENT_SIZE)  # Inicializar la serpiente
-    food = Food(screen, width, height, SEGMENT_SIZE)  # Inicializar la comida
+    clock = pygame.time.Clock()
 
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                pygame.quit()
+                sys.exit()
             elif event.type == pygame.KEYDOWN:
                 handle_keyboard_events(event, snake)
 
@@ -65,29 +60,30 @@ def main():
             score += 1
             food.respawn()
             snake.grow()
-
-        if score % 5 == 0 and score != 0 and score != last_score_increase:
-            level += 1
-            SNAKE_SPEED += 2
-            last_score_increase = score
+            if score % 5 == 0 and score != last_score_increase:
+                level += 1
+                SNAKE_SPEED += 2
+                last_score_increase = score
 
         if snake.check_collision_with_self() or not 0 <= snake.segments[0].x < width or not 0 <= snake.segments[0].y < height:
-            running = False  # Terminar el juego si hay colisión
+            # Mostrar pantalla de Game Over
+            show_game_over_screen(screen, font, score, level)
+            break  # Romper el bucle para terminar el juego
 
         screen.fill(BLACK)
         food.draw()
         snake.draw()
-
-        # score_text = font.render(f'Score: {score}', True, WHITE)
         score_text = font.render(
             f'Score: {score} - Level: {level}', True, WHITE)
         screen.blit(score_text, (10, 10))
-
         pygame.display.flip()
         clock.tick(SNAKE_SPEED)
 
-    pygame.quit()
-    sys.exit()
+
+def main():
+    font = pygame.font.SysFont(None, 55)
+    show_start_screen(screen, font)  # Mostrar pantalla de inicio
+    game_loop(screen)  # Iniciar el bucle del juego
 
 
 if __name__ == '__main__':
