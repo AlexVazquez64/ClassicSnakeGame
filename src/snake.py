@@ -1,7 +1,8 @@
 import pygame
 
-# Colores
-WHITE = (255, 255, 255)
+# Define nuevos colores para la serpiente
+HEAD_COLOR = (70, 130, 180)  # Un color más oscuro para la cabeza
+BODY_COLOR = (34, 139, 34)  # Un color verde para el cuerpo
 
 
 class Snake:
@@ -13,8 +14,15 @@ class Snake:
         self.direction = pygame.Vector2(segment_size, 0)
 
     def draw(self):
-        for segment in self.segments:
-            pygame.draw.rect(self.screen, WHITE, segment)
+        for i, segment in enumerate(self.segments):
+            # Dibuja un círculo para cada segmento
+            pos = segment.center  # Obtiene la posición central del segmento para el círculo
+            if i == 0:  # Si es la cabeza, usa el color de la cabeza
+                pygame.draw.circle(self.screen, HEAD_COLOR,
+                                   pos, self.segment_size // 2)
+            else:  # Para el resto del cuerpo, usa el color del cuerpo
+                pygame.draw.circle(self.screen, BODY_COLOR,
+                                   pos, self.segment_size // 2)
 
     def move(self):
         head_x, head_y = self.segments[0].topleft
