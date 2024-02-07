@@ -82,8 +82,9 @@ def game_loop(screen):
 
 def main():
     font = pygame.font.SysFont(None, 55)
-    show_start_screen(screen, font)  # Mostrar pantalla de inicio
-    game_loop(screen)  # Iniciar el bucle del juego
+    while True:  # Añade un bucle aquí para permitir reiniciar el juego
+        show_start_screen(screen, font)  # Mostrar pantalla de inicio
+        game_loop(screen)  # Ejecuta el bucle principal del juego
 
 
 if __name__ == '__main__':
