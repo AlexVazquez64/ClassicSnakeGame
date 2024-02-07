@@ -12,6 +12,10 @@ class Snake:
         self.segments = [pygame.Rect(100, 100, segment_size, segment_size)]
         # Moverse hacia la derecha inicialmente
         self.direction = pygame.Vector2(segment_size, 0)
+        self.speed = 5  # Inicia con una velocidad base
+        self.level = 1  # Nivel inicial de la serpiente
+        self.speed_factor = 1  # Nuevo atributo para controlar la velocidad
+        self.SNAKE_SPEED = 5 + (self.level - 1) * 2
 
     def draw(self):
         for i, segment in enumerate(self.segments):
@@ -47,3 +51,27 @@ class Snake:
         # Comprobar colisión de la cabeza con el resto del cuerpo
         head = self.segments[0]
         return any(head.colliderect(segment) for segment in self.segments[1:])
+
+    def update_speed(self, amount):
+        # Ajusta este método para cambiar self.speed_factor en lugar de self.speed
+        self.SNAKE_SPEED += amount  # Ajusta según sea necesario
+
+    def update_level(self):
+        # Incrementa el nivel y ajusta la velocidad en consecuencia
+        self.level += 1
+        self.update_speed(2)  # Por ejemplo, incrementa la velocidad en 2
+
+    def increase_speed(self, amount):
+        self.speed += amount
+
+    def decrease_speed(self, amount):
+        # Evitar velocidad negativa o cero
+        self.speed = max(1, self.speed - amount)
+
+    def set_invulnerable(self, duration):
+        self.invulnerable = True
+        # Necesitarás una forma de revertir este estado después de la 'duration'
+        # Esto podría manejarse con un temporizador o con lógica en el bucle principal del juego
+
+    def revert_invulnerable(self):
+        self.invulnerable = False

@@ -38,8 +38,6 @@ def handle_keyboard_events(event, snake):
 def game_loop(screen):
     global width, height
     score = 0
-    level = 1
-    SNAKE_SPEED = 5 + (level - 1) * 2
     font = pygame.font.SysFont(None, 55)
     last_score_increase = 0
     snake = Snake(screen, 20)
@@ -60,24 +58,23 @@ def game_loop(screen):
             score += 1
             food.respawn()
             snake.grow()
-            if score % 5 == 0 and score != last_score_increase:
-                level += 1
-                SNAKE_SPEED += 2
-                last_score_increase = score
+            if score % 5 == 0 and score != last_score_increase:  # Asegúrate de actualizar por nivel
+                snake.update_level()
+                last_score_increase = score  # Actualiza la última puntuación en la que se incrementó el nivel
 
         if snake.check_collision_with_self() or not 0 <= snake.segments[0].x < width or not 0 <= snake.segments[0].y < height:
-            # Mostrar pantalla de Game Over
-            show_game_over_screen(screen, font, score, level)
-            break  # Romper el bucle para terminar el juego
+            show_game_over_screen(screen, font, score, snake.level)
+            break
 
         screen.fill(BLACK)
         food.draw()
         snake.draw()
         score_text = font.render(
-            f'Score: {score} - Level: {level}', True, WHITE)
+            f'Score: {score} - Level: {snake.level}', True, WHITE)
         screen.blit(score_text, (10, 10))
         pygame.display.flip()
-        clock.tick(SNAKE_SPEED)
+        # Usa un tick fijo y maneja la velocidad en la serpiente
+        clock.tick(snake.SNAKE_SPEED)
 
 
 def main():
