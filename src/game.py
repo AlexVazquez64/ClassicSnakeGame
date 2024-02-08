@@ -1,3 +1,4 @@
+from obstacles import Obstacle
 from food import Food
 from snake import Snake
 # Asegúrate de tener este archivo y función
@@ -44,6 +45,8 @@ def game_loop(screen):
     food = Food(screen, width, height, 20)
     running = True
     clock = pygame.time.Clock()
+    obstacles = [Obstacle(screen, width, height, 20)
+                 for _ in range(5)]  # Ejemplo con 5 obstáculos
 
     while running:
         for event in pygame.event.get():
@@ -60,15 +63,28 @@ def game_loop(screen):
             snake.grow()
             if score % 5 == 0 and score != last_score_increase:  # Asegúrate de actualizar por nivel
                 snake.update_level()
-                last_score_increase = score  # Actualiza la última puntuación en la que se incrementó el nivel
+                # Actualiza la última puntuación en la que se incrementó el nivel
+                last_score_increase = score
 
         if snake.check_collision_with_self() or not 0 <= snake.segments[0].x < width or not 0 <= snake.segments[0].y < height:
             show_game_over_screen(screen, font, score, snake.level)
             break
 
+        head = snake.segments[0]
+        for obstacle in obstacles:
+            if head.colliderect(pygame.Rect(obstacle.position[0], obstacle.position[1], obstacle.size, obstacle.size)):
+                # Manejar la colisión. Ejemplo: terminar el juego.
+                show_game_over_screen(screen, font, score, snake.level)
+                running = False
+                break  # Sale del bucle y termina el juego
+
         screen.fill(BLACK)
         food.draw()
         snake.draw()
+        # Dibuja cada obstáculo en la lista
+        for obstacle in obstacles:
+            obstacle.draw()
+            
         score_text = font.render(
             f'Score: {score} - Level: {snake.level}', True, WHITE)
         screen.blit(score_text, (10, 10))
