@@ -21,8 +21,11 @@ class Food:
         return (x, y)
 
     def draw(self):
-        pygame.draw.rect(
-            self.screen, RED, (self.position[0], self.position[1], self.segment_size, self.segment_size))
+        # Calcula el centro del círculo basado en la posición actual
+        center = (self.position[0] + self.segment_size //
+                  2, self.position[1] + self.segment_size // 2)
+        # Dibuja un círculo en lugar de un rectángulo
+        pygame.draw.circle(self.screen, RED, center, self.segment_size // 2)
 
     def respawn(self):
         self.position = self._get_random_position()
